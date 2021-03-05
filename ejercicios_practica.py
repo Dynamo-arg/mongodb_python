@@ -39,6 +39,16 @@ def clear():
     # Cerrar la conexión con la base de datos
     conn.close()
 
+def insert_persona(name, age, grade, tutor):
+    conn = TinyMongoClient()
+    db = conn[db_name]
+
+    persona_json = {"name": name, "age": age, "grade": grade, "tutor":tutor}
+    db.estudiante.insert_one(persona_json)
+
+    conn.close()
+
+
 
 def fill():
     print('Completemos esta tablita!')
@@ -51,17 +61,31 @@ def fill():
     # tutor --> nombre de su tutor
 
     # Se debe utilizar la sentencia insert_one o insert_many.
-
+    insert_persona("Julio", 22, 2, "Carlos")
+    insert_persona("juan", 23, 1, "Carlos")
+    insert_persona("Martin", 24, 3, "Jose")
+    insert_persona("Florencia", 22, 3, "Jose")
+    insert_persona("Soledad", 21, 2, "Maria")
 
 def show():
-    print('Comprovemos su contenido, ¿qué hay en la tabla?')
+    print('Comprobemos su contenido, ¿qué hay en la tabla?')
     # Utilizar la sentencia find para imprimir en pantalla
     # todos los documentos de la DB
     # Queda a su criterio serializar o no el JSON "dumps"
     #  para imprimirlo en un formato más "agradable"
 
+    conn = TinyMongoClient()
+    db = conn[db_name]
 
-def find_by_grade(grade):
+
+    cursor = db.estudiante.find()
+    data = list(cursor)
+    doc = json.dumps(data, indent=4)
+    print(doc)
+
+    conn.close()
+
+def find_by_grade(grado):
     print('Operación búsqueda!')
     # Utilizar la sentencia find para imprimir en pantalla
     # aquellos estudiantes que se encuentra en en año "grade"
@@ -70,6 +94,17 @@ def find_by_grade(grade):
     # en pantalla unicamente los siguiente campos por cada uno:
     # id / name / age
 
+    conn = TinyMongoClient()
+    
+    db = conn[db_name]
+    person_data = db.estudiante.find({"grade": grade})
+    data = list(person_data)
+    
+    doc = json.dumps(data, indent=4)
+    print(doc)
+
+    conn.close()
+    return person_data
 
 def insert(student):
     print('Nuevos ingresos!')
@@ -90,11 +125,11 @@ if __name__ == '__main__':
     # Borrar la db
     clear()
 
-    # fill()
-    # show()
+    fill()
+    show()
 
-    grade = 3
-    # find_by_grade(grade)
+    grade = 2
+    find_by_grade(grade)
 
     # student = {....}
     # insert(student)
