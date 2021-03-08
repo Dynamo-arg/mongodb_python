@@ -11,7 +11,7 @@ Programa creado para poner a prueba los conocimientos
 adquiridos durante la clase
 '''
 
-__author__ = "Inove Coding School"
+__author__ = "Sebastian Volpe"
 __email__ = "alumnos@inove.com.ar"
 __version__ = "1.1"
 
@@ -97,11 +97,11 @@ def find_by_grade(grado):
     conn = TinyMongoClient()
     
     db = conn[db_name]
-    person_data = db.estudiante.find({"grade": grade})
+    person_data = db.estudiante.find({"grade": grado})
     data = list(person_data)
     
-    doc = json.dumps(data, indent=4)
-    print(doc)
+    for i in data:
+        print("Nombre",i["name"], "Edad",i["age"],"Id",i["_id"])
 
     conn.close()
     return person_data
@@ -112,13 +112,27 @@ def insert(student):
     # a la secundaria
 
     # El parámetro student deberá ser un JSON el cual se inserta en la db
+    conn = TinyMongoClient()
+    db = conn[db_name]
+
+    db.estudiante.insert_one(student)
+
+    conn.close()
 
 
-def count(grade):
+def count(grado):
     print('Contar estudiantes')
     # Utilizar la sentencia find + count para contar
     # cuantos estudiantes pertenecen el grado "grade"
+    # Conectarse a la base de datos
 
+    conn = TinyMongoClient()
+    db = conn[db_name]
+
+    count = db.estudiante.find({"grade": grado}).count()
+
+    conn.close()
+    return count
 
 if __name__ == '__main__':
     print("Bienvenidos a otra clase de Inove con Python")
@@ -131,7 +145,8 @@ if __name__ == '__main__':
     grade = 2
     find_by_grade(grade)
 
-    # student = {....}
-    # insert(student)
+    student = {"name": "Sebas", "age": 22, "grade": 3, "tutor":"Julio"}
+    insert(student)
+    
+    count(3)
 
-    # count(grade)
